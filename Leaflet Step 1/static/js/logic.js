@@ -18,21 +18,48 @@ var baseMaps = {
 
 
 //import geojson file
-varearthquakemarkers=[];
 
 
 
 
 
-d3.json(url).then((data)=>{
 
- console.log(data)
-
-
-
+d3.json(url).then(function(data){
+  createfeatures(data);
 });
 
+function createfeatures(earthquakedata){
+  var earthquakemarkers=[];
+  function onEachFeature(feature, layer) {
+    layer.bindPopup("<h3>" + feature.properties.place +
+      "</h3><hr><p>" + new Date(feature.properties.time) + "</p>");
+  }
+  function pointtolayer(feature){
+      var markeroptions={
+        radius:feature.properties.mag,
+        fillColor:"Red",
+        color:"Red",
+        weight:1,
+      }
+      latlng=[feature.geometry.coordinates[1],feature.geometry.coordinates[0]]
+      return L.circleMarker(latlng, geojsonMarkerOptions)
 
+
+
+  }
+
+  // Create a GeoJSON layer containing the features array on the earthquakeData object
+  // Run the onEachFeature function once for each piece of data in the array
+  var earthquakes = L.geoJSON(earthquakedata, {
+    onEachFeature: onEachFeature,
+    pointToLayer: pointtolayer
+  });
+
+  // Sending our earthquakes layer to the createMap function
+  createMap(earthquakes);
+
+  
+}
 
 
 // Create an overlay object
