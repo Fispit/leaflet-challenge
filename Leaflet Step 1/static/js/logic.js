@@ -27,7 +27,7 @@ d3.json(url).then(function(data){
   //  };
 
   // };
-  maxtest=200;
+  maxtest=100;
   mintest=-5;
   var q2=(maxtest+mintest)/2;
   var q1=(mintest+q2)/2;
@@ -68,8 +68,11 @@ function createfeatures(earthquakedata,q1,q2,q3,mindepth,maxdepth){
       else if(depth<=q3){
         return "#f59642"
       }
-      else{
+      else if(depth<=maxdepth){
         return "#ed2424"
+      }
+      else{
+        return "Black"
       }
 
     }  
@@ -145,8 +148,8 @@ function createfeatures(earthquakedata,q1,q2,q3,mindepth,maxdepth){
     var legend = L.control({ position: "bottomright" });
     legend.onAdd = function() {
       var div = L.DomUtil.create("div", "info legend");
-      var limits = [mindepth,q1,q3,maxdepth];
-      var colors = ["#51f542","#f5f542" ,"#f59642" ,"#ed2424" ];
+      var limits = [mindepth,q1,q2,q3,`${maxdepth}+`];
+      var colors = ["#51f542","#f5f542" ,"#f59642" ,"#ed2424", "Black" ];
       var labels = [];
   
       // Add min & max
