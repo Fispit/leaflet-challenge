@@ -13,10 +13,10 @@ var maxtest=0;
 
 
 
-d3.json(url).then(function(data){
+d3.json(url).then(function(earthquakedata){
 
 
-
+  d3.json("PB2002_boundaries.json").then(function(platedata){
   // for (var i = 0; i < data.features.length; i++) {
   //   var compdata= data.features[i].geometry.coordinates[2];
   
@@ -37,10 +37,11 @@ d3.json(url).then(function(data){
   console.log(q2);
   console.log(q1);
   
-  createfeatures(data,q1,q2,q3,mintest,maxtest);
+  createfeatures(earthquakedata,q1,q2,q3,mintest,maxtest,platedata);
+});
 });
 
-function createfeatures(earthquakedata,q1,q2,q3,mindepth,maxdepth){
+function createfeatures(earthquakedata,q1,q2,q3,mindepth,maxdepth,platedata){
   var earthquakemarkers=[];
 
 
@@ -109,10 +110,12 @@ function createfeatures(earthquakedata,q1,q2,q3,mindepth,maxdepth){
     pointToLayer: pointtolayer
   });
 
-  // Sending our earthquakes layer to the createMap function
-  createMap(earthquakes,q1,q2,q3,mindepth,maxdepth);
+  var plates=L.geoJSON(platedata);
 
-  function createMap(earthquakes,q1,q2,q3,mindepth,maxdepth){
+  // Sending our earthquakes layer to the createMap function
+  createMap(earthquakes,q1,q2,q3,mindepth,maxdepth,plates);
+
+  function createMap(earthquakes,q1,q2,q3,mindepth,maxdepth,plates){
     var lightmap = L.tileLayer("https://api.mapbox.com/styles/v1/mapbox/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
       attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
       maxZoom: 18,
@@ -128,14 +131,15 @@ function createfeatures(earthquakedata,q1,q2,q3,mindepth,maxdepth){
     
     // Create an overlay object
     var overlayMaps = {
-      Earthquakes: earthquakes
+      Earthquakes: earthquakes,
+      Plates:plates
     };
     
     // Define a map object
     var myMap = L.map("map", {
       center: [37.09, -95.71],
       zoom: 5,
-      layers: [lightmap,earthquakes]
+      layers: [lightmap,earthquakes,plates]
     });
     
     // Pass our map layers into our layer control
